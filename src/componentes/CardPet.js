@@ -6,27 +6,32 @@ const cores = {
   branco: '#FFF',
   texto: '#333',
   cinza: '#666',
-  sombra: '#000'
+  sombra: '#000',
+  borda: '#EEE'
 };
 
 export default function CardPet({ pet, onPress }) {
   return (
-    <TouchableOpacity style={estilos.card} onPress={onPress}>
-      {/* Imagem do Pet ou Ícone Padrão se não tiver foto */}
+    <TouchableOpacity style={estilos.card} onPress={onPress} activeOpacity={0.9}>
+      {/* Imagem Grande no Topo */}
       {pet.imagem ? (
         <Image source={{ uri: pet.imagem }} style={estilos.imagem} />
       ) : (
         <View style={estilos.imagemPlaceholder}>
-          <Ionicons name="paw" size={40} color="#CCC" />
+          <Ionicons name="paw" size={60} color="#CCC" />
         </View>
       )}
 
+      {/* Informações Abaixo */}
       <View style={estilos.infoContainer}>
         <Text style={estilos.nome}>{pet.nome}</Text>
         <Text style={estilos.detalhes}>{pet.raca} • {pet.idade}</Text>
+        
+        {/* Botãozinho de ação visual (opcional, apenas decorativo por enquanto) */}
+        <View style={estilos.botaoVerMais}>
+          <Text style={estilos.textoVerMais}>Ver detalhes</Text>
+        </View>
       </View>
-
-      <Ionicons name="chevron-forward" size={24} color="#CCC" />
     </TouchableOpacity>
   );
 }
@@ -34,52 +39,64 @@ export default function CardPet({ pet, onPress }) {
 const estilos = StyleSheet.create({
   card: {
     backgroundColor: cores.branco,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    // Sombra
-    elevation: 3,
+    borderRadius: 16,
+    marginBottom: 20,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: cores.borda,
+    elevation: 4,
     shadowColor: cores.sombra,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    // Responsividade Web
+    shadowRadius: 6,
+    // Ajuste Responsivo para Web
     ...Platform.select({
       web: {
-        width: '100%',
-        maxWidth: 600,
-        alignSelf: 'center'
+        width: '300px', // Largura FIXA na web fica mais bonito e previsível
+        margin: '20px', // Espaçamento em volta de cada card
+        // Removemos alignSelf e maxWidth complexos
+      },
+      default: {
+        width: '100%', // No mobile ocupa a largura toda da lista
       }
     })
   },
   imagem: {
-    width: 60,
-    height: 60,
-    borderRadius: 30, // Redonda
-    marginRight: 15,
+    width: '100%',
+    height: 200,
+    resizeMode: 'cover',
   },
   imagemPlaceholder: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: '100%',
+    height: 200,
     backgroundColor: '#F0F0F0',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
   },
   infoContainer: {
-    flex: 1,
+    padding: 16,
   },
   nome: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: cores.texto,
+    marginBottom: 4,
   },
   detalhes: {
     fontSize: 14,
     color: cores.cinza,
-    marginTop: 4,
+    marginBottom: 12,
   },
+  botaoVerMais: {
+    backgroundColor: '#6C63FF',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignSelf: 'flex-start', // Botão alinhado à esquerda
+  },
+  textoVerMais: {
+    color: '#FFF',
+    fontWeight: 'bold',
+    fontSize: 12,
+  }
 });

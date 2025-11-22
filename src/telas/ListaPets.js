@@ -80,7 +80,17 @@ const estilos = StyleSheet.create({
   },
   listaContent: {
     padding: 20,
-    paddingBottom: 100, // Espaço para não ficar atrás do botão flutuante
+    paddingBottom: 100,
+    ...Platform.select({
+      web: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center', // Centraliza os cards na tela
+        maxWidth: 1200, // Limita a largura total da grade para não esticar em monitores ultra-wide
+        alignSelf: 'center', // Centraliza a grade na página
+        width: '100%'
+      }
+    })
   },
   vazioContainer: {
     flex: 1,
