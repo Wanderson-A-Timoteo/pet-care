@@ -19,7 +19,7 @@ export default function ListaPets({ navigation }) {
   const renderizarPet = ({ item }) => (
     <CardPet 
       pet={item} 
-      onPress={() => navigation.navigate('DetalhesPet', { pet })} 
+      onPress={() => navigation.navigate('DetalhesPet', { pet: item })} 
     />
   );
 
