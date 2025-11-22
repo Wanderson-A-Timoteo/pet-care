@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -11,23 +11,28 @@ const cores = {
 };
 
 export default function CardPet({ pet, onPress }) {
+  // Estado para controlar se a imagem falhou
+  const [imgError, setImgError] = useState(false);
+
   return (
     <TouchableOpacity style={estilos.card} onPress={onPress} activeOpacity={0.9}>
-      {/* Imagem Grande no Topo */}
-      {pet.imagem ? (
-        <Image source={{ uri: pet.imagem }} style={estilos.imagem} />
+      {/* Lógica: Se tem imagem E não deu erro, mostra imagem. Senão, placeholder. */}
+      {pet.imagem && !imgError ? (
+        <Image 
+          source={{ uri: pet.imagem }} 
+          style={estilos.imagem} 
+          onError={() => setImgError(true)} // Se falhar, ativa o erro
+        />
       ) : (
         <View style={estilos.imagemPlaceholder}>
           <Ionicons name="paw" size={60} color="#CCC" />
         </View>
       )}
 
-      {/* Informações Abaixo */}
       <View style={estilos.infoContainer}>
         <Text style={estilos.nome}>{pet.nome}</Text>
         <Text style={estilos.detalhes}>{pet.raca} • {pet.idade}</Text>
         
-        {/* Botãozinho de ação visual (opcional, apenas decorativo por enquanto) */}
         <View style={estilos.botaoVerMais}>
           <Text style={estilos.textoVerMais}>Ver detalhes</Text>
         </View>
@@ -52,12 +57,11 @@ const estilos = StyleSheet.create({
     // Ajuste Responsivo para Web
     ...Platform.select({
       web: {
-        width: '300px', // Largura FIXA na web fica mais bonito e previsível
+        width: '300px', // Largura FIXA na web
         margin: '20px', // Espaçamento em volta de cada card
-        // Removemos alignSelf e maxWidth complexos
       },
       default: {
-        width: '100%', // No mobile ocupa a largura toda da lista
+        width: '100%', // Mobile ocupa a largura toda da lista
       }
     })
   },
@@ -92,7 +96,7 @@ const estilos = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
-    alignSelf: 'flex-start', // Botão alinhado à esquerda
+    alignSelf: 'flex-start',
   },
   textoVerMais: {
     color: '#FFF',
