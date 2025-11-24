@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -23,9 +23,24 @@ const cores = {
 };
 
 export default function DetalhesPet({ route, navigation }) {
-  const { pet } = route.params; // Recebe os dados do pet clicado
-  const { excluirPet } = useContext(PetContext);
+  const { pets, excluirPet } = useContext(PetContext); // 1. Pegamos a lista ATUALIZADA de pets
   const [imgError, setImgError] = useState(false);
+
+  // 2. Pegamos apenas o ID vindo da navegação (isso nunca muda)
+  const petId = route.params?.pet?.id;
+
+  // 3. Encontramos o pet "vivo" dentro da lista do contexto
+  const pet = pets.find(p => p.id === petId);
+
+  // Se o pet não for encontrado (ex: foi excluído), voltamos para evitar erro
+  useEffect(() => {
+    if (!pet) {
+      navigation.navigate('Home');
+    }
+  }, [pet, navigation]);
+
+  // Se ainda não carregou ou não achou, retorna nulo para não quebrar
+  if (!pet) return null;
 
   const confirmarExclusao = () => {
     if (Platform.OS === 'web') {
@@ -46,7 +61,12 @@ export default function DetalhesPet({ route, navigation }) {
 
   const executarExclusao = () => {
     excluirPet(pet.id);
-    navigation.goBack();
+    navigation.navigate('Home');
+  };
+
+  const irParaEdicao = () => {
+    // Passamos o objeto 'pet' atualizado para a edição
+    navigation.navigate('CadastroPet', { petParaEditar: pet });
   };
 
   return (
@@ -54,7 +74,6 @@ export default function DetalhesPet({ route, navigation }) {
       <ScrollView contentContainerStyle={estilos.scrollContent}>
         
         <View style={estilos.cardDetalhes}>
-          {/* Imagem Grande com Fallback */}
           <View style={estilos.imagemContainer}>
             {pet.imagem && !imgError ? (
               <Image 
@@ -69,7 +88,6 @@ export default function DetalhesPet({ route, navigation }) {
             )}
           </View>
 
-          {/* Informações */}
           <View style={estilos.infoContainer}>
             <Text style={estilos.nome}>{pet.nome}</Text>
             
@@ -85,20 +103,18 @@ export default function DetalhesPet({ route, navigation }) {
           </View>
 
           <View style={estilos.botoesContainer}>
-            {/* Botão Editar */}
             <TouchableOpacity style={estilos.botaoEditar} onPress={irParaEdicao}>
               <Ionicons name="create-outline" size={24} color={cores.branco} />
               <Text style={estilos.textoBotao}>Editar</Text>
             </TouchableOpacity>
 
-            {/* Botão Excluir */}
             <TouchableOpacity style={estilos.botaoExcluir} onPress={confirmarExclusao}>
               <Ionicons name="trash-outline" size={24} color={cores.branco} />
               <Text style={estilos.textoBotao}>Excluir</Text>
             </TouchableOpacity>
           </View>
-
         </View>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -113,7 +129,7 @@ const estilos = StyleSheet.create({
     padding: 20,
     flexGrow: 1,
     ...Platform.select({
-      web: { alignItems: 'center' } // Centraliza na web
+      web: { alignItems: 'center' }
     })
   },
   cardDetalhes: {
@@ -127,7 +143,7 @@ const estilos = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     ...Platform.select({
-      web: { maxWidth: 600 } // Limita largura na web
+      web: { maxWidth: 600 }
     })
   },
   imagemContainer: {
@@ -172,11 +188,11 @@ const estilos = StyleSheet.create({
   botoesContainer: {
     padding: 24,
     paddingTop: 0,
-    gap: 15, // Espaço entre botões
+    gap: 15,
   },
   botaoEditar: {
     flexDirection: 'row',
-    backgroundColor: '#4CAF50', // Verde para editar
+    backgroundColor: '#4CAF50',
     padding: 16,
     borderRadius: 12,
     justifyContent: 'center',
