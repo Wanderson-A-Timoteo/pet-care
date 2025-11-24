@@ -39,6 +39,15 @@ export const PetProvider = ({ children }) => {
     salvarNoStorage(novaLista);
   };
 
+  // Atualizar pet existente
+  const atualizarPet = (id, dadosAtualizados) => {
+    const novaLista = pets.map(pet => 
+      pet.id === id ? { ...pet, ...dadosAtualizados } : pet
+    );
+    setPets(novaLista);
+    salvarNoStorage(novaLista);
+  };
+
   // Excluir pet
   const excluirPet = (id) => {
     const novaLista = pets.filter(pet => pet.id !== id);
@@ -47,7 +56,7 @@ export const PetProvider = ({ children }) => {
   };
 
   return (
-    <PetContext.Provider value={{ pets, adicionarPet, excluirPet }}>
+    <PetContext.Provider value={{ pets, adicionarPet, excluirPet, atualizarPet }}>
       {children}
     </PetContext.Provider>
   );
