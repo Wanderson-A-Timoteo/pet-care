@@ -44,7 +44,7 @@ function NavegacaoAbas() {
   );
 }
 
-// Configuração Principal (Stack) que engloba as Abas
+// Configuração Principal que engloba as Abas
 export default function Rotas() {
   return (
     <NavigationContainer>

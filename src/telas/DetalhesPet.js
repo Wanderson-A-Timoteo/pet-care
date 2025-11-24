@@ -23,13 +23,13 @@ const cores = {
 };
 
 export default function DetalhesPet({ route, navigation }) {
-  const { pets, excluirPet } = useContext(PetContext); // 1. Pegamos a lista ATUALIZADA de pets
+  const { pets, excluirPet } = useContext(PetContext); // Lista atualizada de pets
   const [imgError, setImgError] = useState(false);
 
-  // 2. Pegamos apenas o ID vindo da navegação (isso nunca muda)
+  // Pega apenas o ID vindo da navegação
   const petId = route.params?.pet?.id;
 
-  // 3. Encontramos o pet "vivo" dentro da lista do contexto
+  // Encontra o pet dentro da lista do contexto
   const pet = pets.find(p => p.id === petId);
 
   // Se o pet não for encontrado (ex: foi excluído), voltamos para evitar erro
@@ -65,7 +65,7 @@ export default function DetalhesPet({ route, navigation }) {
   };
 
   const irParaEdicao = () => {
-    // Passamos o objeto 'pet' atualizado para a edição
+    // Passa o objeto 'pet' atualizado para a edição
     navigation.navigate('CadastroPet', { petParaEditar: pet });
   };
 

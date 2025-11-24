@@ -16,7 +16,7 @@ export default function CardPet({ pet, onPress }) {
 
   return (
     <TouchableOpacity style={estilos.card} onPress={onPress} activeOpacity={0.9}>
-      {/* Lógica: Se tem imagem E não deu erro, mostra imagem. Senão, placeholder. */}
+      {/* Se tem imagem E não deu erro, mostra imagem. Senão, placeholder. */}
       {pet.imagem && !imgError ? (
         <Image 
           source={{ uri: pet.imagem }} 
