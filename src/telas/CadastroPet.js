@@ -1,14 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TextInput, 
-  TouchableOpacity, 
-  Image, 
-  ScrollView, 
-  Platform, 
-  Alert 
+  View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView, Platform, Alert 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
@@ -23,54 +15,71 @@ const cores = {
   placeholder: '#999'
 };
 
-export default function CadastroPet({ navigation }) {
-  const { adicionarPet } = useContext(PetContext);
+export default function CadastroPet({ navigation, route }) {
+  const { adicionarPet, atualizarPet } = useContext(PetContext);
+  
+  // Verifica se estamos editando (recebendo dados via rota)
+  const petParaEditar = route.params?.petParaEditar;
+  const modoEdicao = !!petParaEditar;
 
   const [nome, setNome] = useState('');
   const [raca, setRaca] = useState('');
   const [idade, setIdade] = useState('');
   const [imagemUri, setImagemUri] = useState(null);
 
+  // Preenche os campos se for edição
+  useEffect(() => {
+    if (modoEdicao) {
+      setNome(petParaEditar.nome);
+      setRaca(petParaEditar.raca);
+      setIdade(petParaEditar.idade);
+      setImagemUri(petParaEditar.imagem);
+      // Atualiza título da navegação
+      navigation.setOptions({ title: 'Editar Pet' });
+    }
+  }, [petParaEditar, navigation]);
+
   const selecionarImagem = async () => {
     const permissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
     if (permissao.granted === false) {
-      Alert.alert("Permissão necessária", "Precisamos de acesso à galeria para escolher a foto!");
+      Alert.alert("Permissão necessária", "Precisamos de acesso à galeria!");
       return;
     }
-
     const resultado = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
-
     if (!resultado.canceled) {
       setImagemUri(resultado.assets[0].uri);
     }
   };
 
-  const salvarPet = () => {
+  const salvar = () => {
     if (!nome || !raca || !idade) {
-      Alert.alert("Atenção", "Preencha pelo menos nome, raça e idade!");
+      Alert.alert("Atenção", "Preencha nome, raça e idade!");
       return;
     }
 
-    const novoPet = {
-      id: Date.now().toString(),
+    const dadosPet = {
       nome,
       raca,
       idade,
       imagem: imagemUri
     };
 
-    adicionarPet(novoPet);
+    if (modoEdicao) {
+      // ATUALIZAR
+      atualizarPet(petParaEditar.id, dadosPet);
+      Alert.alert("Sucesso", "Dados do pet atualizados!");
+    } else {
+      // CRIAR NOVO
+      const novoPet = { id: Date.now().toString(), ...dadosPet };
+      adicionarPet(novoPet);
+      Alert.alert("Sucesso", "Novo amigo cadastrado!");
+    }
     
-    setNome('');
-    setRaca('');
-    setIdade('');
-    setImagemUri(null);
     navigation.goBack();
   };
 
@@ -79,7 +88,7 @@ export default function CadastroPet({ navigation }) {
       <ScrollView contentContainerStyle={estilos.scrollContent}>
         <View style={estilos.formulario}>
           
-          <Text style={estilos.titulo}>Novo Amigo 🐾</Text>
+          <Text style={estilos.titulo}>{modoEdicao ? "Editar Pet ✏️" : "Novo Amigo 🐾"}</Text>
 
           <Text style={estilos.label}>Nome:</Text>
           <TextInput 
@@ -111,7 +120,7 @@ export default function CadastroPet({ navigation }) {
 
           <TouchableOpacity style={estilos.botaoImagem} onPress={selecionarImagem}>
             <Text style={estilos.textoBotaoImagem}>
-              {imagemUri ? "Trocar Foto" : "Selecionar Foto"}
+              {imagemUri ? "Alterar Foto" : "Selecionar Foto"}
             </Text>
           </TouchableOpacity>
 
@@ -119,8 +128,10 @@ export default function CadastroPet({ navigation }) {
             <Image source={{ uri: imagemUri }} style={estilos.previewImagem} />
           )}
 
-          <TouchableOpacity style={estilos.botaoSalvar} onPress={salvarPet}>
-            <Text style={estilos.textoBotaoSalvar}>Cadastrar Pet</Text>
+          <TouchableOpacity style={estilos.botaoSalvar} onPress={salvar}>
+            <Text style={estilos.textoBotaoSalvar}>
+              {modoEdicao ? "Salvar Alterações" : "Cadastrar Pet"}
+            </Text>
           </TouchableOpacity>
 
         </View>
@@ -137,15 +148,11 @@ const estilos = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     padding: 20,
-    ...Platform.select({
-      web: { alignItems: 'center' }
-    })
+    ...Platform.select({ web: { alignItems: 'center' } })
   },
   formulario: {
     width: '100%',
-    ...Platform.select({
-      web: { maxWidth: 600 }
-    })
+    ...Platform.select({ web: { maxWidth: 600 } })
   },
   titulo: {
     fontSize: 24,
