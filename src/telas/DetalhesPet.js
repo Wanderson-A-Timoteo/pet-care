@@ -84,13 +84,21 @@ export default function DetalhesPet({ route, navigation }) {
             </View>
           </View>
 
-          {/* Botão Excluir */}
-          <TouchableOpacity style={estilos.botaoExcluir} onPress={confirmarExclusao}>
-            <Ionicons name="trash-outline" size={24} color={cores.branco} />
-            <Text style={estilos.textoBotao}>Remover Pet</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={estilos.botoesContainer}>
+            {/* Botão Editar */}
+            <TouchableOpacity style={estilos.botaoEditar} onPress={irParaEdicao}>
+              <Ionicons name="create-outline" size={24} color={cores.branco} />
+              <Text style={estilos.textoBotao}>Editar</Text>
+            </TouchableOpacity>
 
+            {/* Botão Excluir */}
+            <TouchableOpacity style={estilos.botaoExcluir} onPress={confirmarExclusao}>
+              <Ionicons name="trash-outline" size={24} color={cores.branco} />
+              <Text style={estilos.textoBotao}>Excluir</Text>
+            </TouchableOpacity>
+          </View>
+
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -161,12 +169,23 @@ const estilos = StyleSheet.create({
     color: '#555',
     marginLeft: 10,
   },
+  botoesContainer: {
+    padding: 24,
+    paddingTop: 0,
+    gap: 15, // Espaço entre botões
+  },
+  botaoEditar: {
+    flexDirection: 'row',
+    backgroundColor: '#4CAF50', // Verde para editar
+    padding: 16,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   botaoExcluir: {
     flexDirection: 'row',
     backgroundColor: cores.vermelho,
     padding: 16,
-    margin: 24,
-    marginTop: 0,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
